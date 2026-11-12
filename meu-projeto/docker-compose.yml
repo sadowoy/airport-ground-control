@@ -1,0 +1,45 @@
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: bd_postgres
+    environment:
+      POSTGRES_USER: usuario_lab
+      POSTGRES_PASSWORD: senha_lab # Senhas apenas para laboratório/teste
+      POSTGRES_DB: aeroporto
+    ports:
+      - "5432:5432"
+    volumes:
+      # Mapeia as pastas do seu projeto para dentro do container
+      - ./postgresql:/scripts/postgresql
+      - ./procedures:/scripts/procedures
+      - ./performance:/scripts/performance
+      # O script shell abaixo vai rodar automaticamente quando o banco nascer
+      - ./docker/postgres-init.sh:/docker-entrypoint-initdb.d/init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U usuario_lab -d aeroporto"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: bd_oracle
+    environment:
+      ORACLE_PASSWORD: senha_lab # Senhas apenas para laboratório/teste
+      APP_USER: usuario_lab
+      APP_PASSWORD: senha_lab
+    ports:
+      - "1521:1521"
+    volumes:
+      # Mapeia as pastas do seu projeto para dentro do container
+      - ./oracle:/scripts/oracle
+      - ./procedures:/scripts/procedures
+      - ./performance:/scripts/performance
+      # O script shell abaixo vai rodar automaticamente quando o banco nascer
+      - ./docker/oracle-init.sh:/container-entrypoint-initdb.d/init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
