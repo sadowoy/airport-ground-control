@@ -1,0 +1,20 @@
+services:
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: bd_oracle
+    environment:
+      ORACLE_PASSWORD: senha_lab
+      APP_USER: usuario_lab
+      APP_USER_PASSWORD: senha_lab
+    ports:
+      - "1521:1521"
+    volumes:
+      - ./oracle:/scripts/oracle
+      - ./procedures:/scripts/procedures
+      - ./performance:/scripts/performance
+      - ./docker/oracle-init.sh:/container-entrypoint-initdb.d/init.sh
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10

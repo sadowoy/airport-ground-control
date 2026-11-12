@@ -1,0 +1,70 @@
+@startuml
+hide circle
+skinparam linetype ortho
+
+entity MODELO_AERONAVE {
+  * modelo_id : NUMBER <<PK>>
+  --
+  * fabricante : VARCHAR(50)
+  * nome : VARCHAR(50)
+  * mtow_kg : NUMERIC(10,2)
+}
+
+entity AERONAVE {
+  * aeronave_id : NUMBER <<PK>>
+  --
+  * modelo_id : NUMBER <<FK>>
+  * prefixo : VARCHAR(10) <<UK>>
+  * ano_fabricacao : NUMBER
+}
+
+entity PISTA {
+  * pista_id : NUMBER <<PK>>
+  --
+  * numero_identificacao : VARCHAR(10) <<UK>>
+  * tamanho_metros : NUMBER
+  * status : VARCHAR(20)
+}
+
+entity VOO {
+  * voo_id : NUMBER <<PK>>
+  --
+  * aeronave_id : NUMBER <<FK>>
+  * pista_id : NUMBER <<FK>>
+  * data_hora_prevista : TIMESTAMP
+  * peso_total_kg : NUMERIC(10,2)
+  * status : VARCHAR(20)
+}
+
+entity TRIPULANTE {
+  * tripulante_id : NUMBER <<PK>>
+  --
+  * matricula : VARCHAR(20) <<UK>>
+  * nome : VARCHAR(100)
+  * cargo : VARCHAR(50)
+}
+
+entity ESCALA_VOO {
+  * voo_id : NUMBER <<PK>><<FK>>
+  * tripulante_id : NUMBER <<PK>><<FK>>
+  --
+  * funcao_exercida : VARCHAR(50)
+  horas_computadas : NUMERIC(5,2)
+}
+
+entity ORDEM_MANUTENCAO {
+  * ordem_id : NUMBER <<PK>>
+  --
+  * aeronave_id : NUMBER <<FK>>
+  * nivel_severidade : NUMBER
+  * status : VARCHAR(20)
+  * data_abertura : DATE
+}
+
+MODELO_AERONAVE ||--o{ AERONAVE : possui
+AERONAVE        ||--o{ VOO : realiza
+PISTA           ||--o{ VOO : aloca
+VOO             ||--|{ ESCALA_VOO : tem
+TRIPULANTE      ||--o{ ESCALA_VOO : cumpre
+AERONAVE        ||--o{ ORDEM_MANUTENCAO : sofre
+@enduml
